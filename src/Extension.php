@@ -13,11 +13,13 @@ class Extension extends Nette\DI\CompilerExtension
         parent::loadConfiguration();
         $config = $this->getConfig();
 
-        $publicRoot = $config['publicRoot'];
-        foreach ($config['assets'] as $asset) {
-            if ($publicRoot != $asset['hiddenRoot']) {
-                foreach ($asset['dirs'] as $dir) {
-                    $this->recurseCopy($asset['hiddenRoot'] . $dir, $publicRoot . $dir);
+        if (isset($config['publicRoot']) && is_array($config['assets'])) {
+            $publicRoot = $config['publicRoot'];
+            foreach ($config['assets'] as $asset) {
+                if ($publicRoot != $asset['hiddenRoot']) {
+                    foreach ($asset['dirs'] as $dir) {
+                        $this->recurseCopy($asset['hiddenRoot'] . $dir, $publicRoot . $dir);
+                    }
                 }
             }
         }
