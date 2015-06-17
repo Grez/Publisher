@@ -15,8 +15,10 @@ class Extension extends Nette\DI\CompilerExtension
 
         $publicRoot = $config['publicRoot'];
         foreach ($config['assets'] as $asset) {
-            foreach ($asset['dirs'] as $dir) {
-                $this->recurseCopy($asset['hiddenRoot'] . $dir, $publicRoot . $dir);
+            if ($publicRoot != $asset['hiddenRoot']) {
+                foreach ($asset['dirs'] as $dir) {
+                    $this->recurseCopy($asset['hiddenRoot'] . $dir, $publicRoot . $dir);
+                }
             }
         }
     }
