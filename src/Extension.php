@@ -13,12 +13,11 @@ class Extension extends Nette\DI\CompilerExtension
         parent::loadConfiguration();
         $config = $this->getConfig();
 
-        if (isset($config['publicRoot']) && is_array($config['assets'])) {
-            $publicRoot = $config['publicRoot'];
-            foreach ($config['assets'] as $asset) {
-                if ($publicRoot != $asset['hiddenRoot']) {
-                    foreach ($asset['dirs'] as $dir) {
-                        $this->recurseCopy($asset['hiddenRoot'] . $dir, $publicRoot . $dir);
+        if (is_array($config)) {
+            foreach ($config as $asset) {
+                if ($asset['to'] != $asset['from']) {
+                    foreach ($asset['items'] as $dir) {
+                        $this->recurseCopy($asset['from'] . $dir, $asset['to'] . $dir);
                     }
                 }
             }
@@ -32,18 +31,23 @@ class Extension extends Nette\DI\CompilerExtension
      */
     protected function recurseCopy($src, $dst)
     {
-        $dir = opendir($src);
-        @mkdir($dst, 0777, true);
-        while (false !== ($file = readdir($dir))) {
-            if (($file != '.' ) && ($file != '..' )) {
-                if (is_dir($src . '/' . $file) ) {
-                    $this->recurseCopy($src . '/' . $file, $dst . '/' . $file);
-                } else {
-                    copy($src . '/' . $file, $dst . '/' . $file);
+        if (is_dir($dst)) {
+            $dir = opendir($src);
+            @mkdir($dst, 0777, true);
+            while (false !== ($file = readdir($dir))) {
+                if (($file != '.') && ($file != '..')) {
+                    if (is_dir($src . '/' . $file)) {
+                        $this->recurseCopy($src . '/' . $file, $dst . '/' . $file);
+                    } else {
+                        copy($src . '/' . $file, $dst . '/' . $file);
+                    }
                 }
             }
+            closedir($dir);
+        } else {
+            @mkdir(dirname($dst), 0777, true);
+            copy($src, $dst);
         }
-        closedir($dir);
     }
 
 }
