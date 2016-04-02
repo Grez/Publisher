@@ -31,7 +31,7 @@ class Extension extends Nette\DI\CompilerExtension
      */
     protected function recurseCopy($src, $dst)
     {
-        if (is_dir($dst)) {
+        if (is_dir($src)) {
             $dir = opendir($src);
             @mkdir($dst, 0777, true);
             while (false !== ($file = readdir($dir))) {
